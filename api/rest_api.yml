@@ -1,0 +1,599 @@
+openapi: 3.0.3
+info:
+  title: Swagger VK - OpenAPI 3.0
+  description: |-
+    This is sample API for VK for next tasks:
+    - Viewing user account
+    - Viewing user fiends
+    - Add friend
+    - Delete friend
+    - Viewing dialogs and chats 
+    - Send message to dialog/chat
+    - Read messages from dialog/chat
+    - Post media file loading
+    - Public post
+    
+    - Viewing user post feed
+    - Viewing home post feed
+  version: 1.0.11
+tags:
+  - name: VK
+    description: Short VK API
+paths:
+  /user/{user_id}:
+    get:
+      tags:
+        - user
+      summary: Get user info
+      description: Get user information by id
+      operationId: getUser
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+  /user/{user_id}/friends:
+    get:
+      tags:
+        - friends
+      summary: Get user friends list
+      description: Get all user friends
+      operationId: getFriends
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserPreview'
+        '400':
+          description: Unable to load friends
+    post:
+      tags:
+        - friends
+      summary: Add new user to friend list
+      description: Add new user
+      operationId: addFriend
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  format: int64
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Unable to add friend
+    delete:
+      tags:
+        - friends
+      summary: Add new user to friend list
+      description: Add new user
+      operationId: deleteFriend
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+        - name: friend_id
+          in: query
+          description: friend id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Unable to delete friend
+  /chat:
+    post:
+      tags:
+        - chats
+      summary: Create chat or dialog
+      description: Create chat or dialog
+      operationId: createChat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/CreateChat'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Unable to create chat
+  /chat/list:
+    get:
+      tags:
+        - chats
+      summary: Get all chats and dialogs
+      description: Get all chats and dialogs for user
+      operationId: getAllChats
+      parameters:
+        - name: user_id
+          in: query
+          description: User id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: limit
+          in: query
+          description: number of chats
+          schema:
+            type: integer
+            format: int64
+            example: 20
+        - name: offset
+          in: query
+          description: offset for getting chats
+          schema:
+            type: integer
+            format: int64
+            example: 0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatPreview'
+        '400':
+          description: Unable to load chats
+  /chat/{chat_id}:
+    get:
+      tags:
+        - chats
+      summary: Get chat or dialog info
+      description: Get chat or dialog info
+      operationId: getChat
+      parameters:
+        - name: chat_id
+          in: path
+          description: Chat id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/DetailedChat'
+        '400':
+          description: Unable to load chat
+  /chat/{chat_id}/messages:
+    get:
+      tags:
+        - chats
+      summary: Get chat messages
+      description: Get chat messages
+      operationId: getChatMessages
+      parameters:
+        - name: chat_id
+          in: path
+          description: Chat id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: limit
+          in: query
+          description: number of messages
+          schema:
+            type: integer
+            format: int64
+            example: 20
+        - name: offset
+          in: query
+          description: offset for getting messages
+          schema:
+            type: integer
+            format: int64
+            example: 0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetMessage'
+        '400':
+          description: Unable to load messages
+    post:
+      tags:
+        - chats
+      summary: Send message into chat
+      description: Send message into chat
+      operationId: sendChatMessage
+      parameters:
+        - name: chat_id
+          in: path
+          description: Chat id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/SendMessage'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Unable to send message
+  /file:
+    post:
+      tags:
+        - file
+      summary: Upload file
+      description: Upload file
+      operationId: fileUpload
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Successful uploading
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/File'
+        '400':
+          description: Cannot upload file
+  /post:
+    post:
+      tags:
+        - post
+      summary: Public post
+      description: Public post
+      operationId: poblicPost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/CreatePost'
+      responses:
+        '200':
+          description: Post has been created successfully
+        '400':
+          description: Cannot create post
+  /post/user/{user_id}:
+    get:
+      tags:
+        - post
+      summary: Get user posts
+      description: Get user posts
+      operationId: getUserPosts
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: limit
+          in: query
+          description: number of posts
+          schema:
+            type: integer
+            format: int64
+            example: 20
+        - name: offset
+          in: query
+          description: offset for getting posts
+          schema:
+            type: integer
+            format: int64
+            example: 0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostPreview'
+        '400':
+          description: Unable load user feed
+  /post/user/{user_id}/home:
+    get:
+      tags:
+        - post
+      summary: Get user home posts
+      description: Get user home posts
+      operationId: getUserHomePosts
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: limit
+          in: query
+          description: number of posts
+          schema:
+            type: integer
+            format: int64
+            example: 20
+        - name: offset
+          in: query
+          description: offset for getting posts
+          schema:
+            type: integer
+            format: int64
+            example: 0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HomePost'
+        '400':
+          description: Unable load user home feed
+  /healthcheck:
+    get:
+      tags:
+        - healthcheck
+      summary: Check if service works
+      description: Check the service
+      operationId: healthCheck
+      responses:
+        '200':
+          description: It works
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stated_at:
+                    type: string
+                    format: date-time
+                    example: 2023-05-23 18:03:21
+        '500':
+          description: Service not responding
+
+
+
+components:
+  schemas:
+    UserPreview:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        avatar:
+          $ref: '#/components/schemas/File'
+    User:
+      allOf:
+        - $ref: '#/components/schemas/UserPreview'
+        - type: object
+          properties:
+            username:
+              type: string
+              example: theUser
+            email:
+              type: string
+              example: john@email.com
+            phone:
+              type: string
+              example: '12345'
+    Chat:
+      type: object
+      properties:
+        type:
+          type: string
+          description: chat type
+          example: chat
+          enum:
+            - personal
+            - chat
+        chat_name:
+          type: string
+          example: team fun chat :-D
+        logo:
+          $ref: '#/components/schemas/File'
+    CreateChat:
+      allOf:
+        - $ref: '#/components/schemas/Chat'
+        - type: object
+          properties:
+            owner_id:
+              type: integer
+              format: int64
+              example: 1
+            members_id:
+              type: array
+              items:
+                type: integer
+                format: int64
+              example: [2, 3, 4, 555]
+    ChatPreview:
+      allOf:
+        - $ref: '#/components/schemas/Chat'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              example: 1
+            created_at:
+              type: string
+              format: date-time
+              example: 2023-05-01 12:11:02
+    DetailedChat:
+      allOf:
+        - $ref: '#/components/schemas/ChatPreview'
+        - type: object
+          properties:
+            owner:
+              $ref: '#/components/schemas/UserPreview'
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserPreview'
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        text:
+          type: string
+          description: Message text
+          example: Hello everyone!
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+    GetMessage:
+      allOf:
+      - $ref: '#/components/schemas/Message'
+      - type: object
+        properties:
+          author:
+            $ref: '#/components/schemas/UserPreview'
+          created_at:
+            type: string
+            format: date-time
+            example: 2023-05-01 12:11:02
+    SendMessage:
+      allOf:
+      - $ref: '#/components/schemas/Message'
+      - type: object
+        properties:
+          author_id:
+            type: integer
+            format: int64
+            example: 1
+    File:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 123
+    Post:
+      type: object
+      properties:
+        description:
+          type: string
+          example: Very interesting post about everything
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+    CreatePost:
+      allOf:
+        - $ref: '#/components/schemas/Post'
+        - type: object
+          properties:
+            author_id:
+              type: integer
+              format: int64
+              example: 1
+    PostPreview:
+      allOf:
+        - $ref: '#/components/schemas/Post'
+        - type: object
+          properties:
+            created_at:
+              type: string
+              format: date-time
+              example: 2023-01-02 12:00:01
+            id:
+              type: integer
+              format: int64
+              example: 442
+    HomePost:
+      allOf:
+        - $ref: '#/components/schemas/PostPreview'
+        - type: object
+          properties:
+            author:
+              $ref: '#/components/schemas/UserPreview'
