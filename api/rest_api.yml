@@ -67,9 +67,16 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserPreview'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserPreview'
+                  total:
+                    type: integer
+                    format: int64
+                    example: 231
         '400':
           description: Unable to load friends
     post:
@@ -182,9 +189,16 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ChatPreview'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatPreview'
+                  total:
+                    type: integer
+                    format: int64
+                    example: 500
         '400':
           description: Unable to load chats
   /chat/{chat_id}:
@@ -250,9 +264,16 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GetMessage'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GetMessage'
+                  total:
+                    type: integer
+                    format: int64
+                    example: 45300
         '400':
           description: Unable to load messages
     post:
@@ -360,9 +381,16 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PostPreview'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PostPreview'
+                  total:
+                    type: integer
+                    format: int64
+                    example: 12
         '400':
           description: Unable load user feed
   /post/user/{user_id}/home:
@@ -402,9 +430,16 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/HomePost'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HomePost'
+                  total:
+                    type: integer
+                    format: int64
+                    example: 980
         '400':
           description: Unable load user home feed
   /healthcheck:
