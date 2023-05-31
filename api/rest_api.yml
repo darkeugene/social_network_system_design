@@ -1,24 +1,7 @@
 openapi: 3.0.3
 info:
   title: Swagger VK - OpenAPI 3.0
-  description: |-
-    This is sample API for VK for next tasks:
-    - Viewing user account
-    - Viewing user fiends
-    - Add friend
-    - Delete friend
-    - Viewing dialogs and chats 
-    - Send message to dialog/chat
-    - Read messages from dialog/chat
-    - Post media file loading
-    - Public post
-    
-    - Viewing user post feed
-    - Viewing home post feed
   version: 1.0.11
-tags:
-  - name: VK
-    description: Short VK API
 paths:
   /user/{user_id}:
     get:
@@ -344,7 +327,6 @@ paths:
           description: Post has been created successfully
         '400':
           description: Cannot create post
-  /post/user/{user_id}:
     get:
       tags:
         - post
@@ -353,7 +335,7 @@ paths:
       operationId: getUserPosts
       parameters:
         - name: user_id
-          in: path
+          in: query
           description: User id
           required: true
           explode: true
@@ -393,16 +375,16 @@ paths:
                     example: 12
         '400':
           description: Unable load user feed
-  /post/user/{user_id}/home:
+  /post/home:
     get:
       tags:
         - post
       summary: Get user home posts
-      description: Get user home posts
+      description: Returns home posts for the requested user
       operationId: getUserHomePosts
       parameters:
         - name: user_id
-          in: path
+          in: query
           description: User id
           required: true
           explode: true
