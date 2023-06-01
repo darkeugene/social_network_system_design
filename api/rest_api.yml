@@ -3,10 +3,10 @@ info:
   title: Swagger VK - OpenAPI 3.0
   version: 1.0.11
 paths:
-  /user/{user_id}:
+  /users/{user_id}:
     get:
       tags:
-        - user
+        - users
       summary: Get user info
       description: Get user information by id
       operationId: getUser
@@ -28,7 +28,9 @@ paths:
                 $ref: '#/components/schemas/User'
         '404':
           description: User not found
-  /user/{user_id}/friends:
+        '500':
+          description: Internal Server Error
+  /users/{user_id}/friends:
     get:
       tags:
         - friends
@@ -62,6 +64,8 @@ paths:
                     example: 231
         '400':
           description: Unable to load friends
+        '500':
+          description: Internal Server Error
     post:
       tags:
         - friends
@@ -91,11 +95,13 @@ paths:
           description: Successful operation
         '400':
           description: Unable to add friend
+        '500':
+          description: Internal Server Error
     delete:
       tags:
         - friends
-      summary: Add new user to friend list
-      description: Add new user
+      summary: Delete user from friend list
+      description: Delete user from friend list
       operationId: deleteFriend
       parameters:
         - name: user_id
@@ -118,13 +124,24 @@ paths:
           description: Successful operation
         '400':
           description: Unable to delete friend
-  /chat:
+        '500':
+          description: Internal Server Error
+  /users/{user_id}/chats:
     post:
       tags:
         - chats
       summary: Create chat or dialog
       description: Create chat or dialog
       operationId: createChat
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
         content:
           application/json:
@@ -136,7 +153,8 @@ paths:
           description: Successful operation
         '400':
           description: Unable to create chat
-  /chat/list:
+        '500':
+          description: Internal Server Error
     get:
       tags:
         - chats
@@ -145,7 +163,7 @@ paths:
       operationId: getAllChats
       parameters:
         - name: user_id
-          in: query
+          in: path
           description: User id
           required: true
           schema:
@@ -184,7 +202,9 @@ paths:
                     example: 500
         '400':
           description: Unable to load chats
-  /chat/{chat_id}:
+        '500':
+          description: Internal Server Error
+  /chats/{chat_id}:
     get:
       tags:
         - chats
@@ -210,7 +230,9 @@ paths:
                 $ref: '#/components/schemas/DetailedChat'
         '400':
           description: Unable to load chat
-  /chat/{chat_id}/messages:
+        '500':
+          description: Internal Server Error
+  /chats/{chat_id}/messages:
     get:
       tags:
         - chats
@@ -259,6 +281,8 @@ paths:
                     example: 45300
         '400':
           description: Unable to load messages
+        '500':
+          description: Internal Server Error
     post:
       tags:
         - chats
@@ -286,7 +310,9 @@ paths:
           description: Successful operation
         '400':
           description: Unable to send message
-  /file:
+        '500':
+          description: Internal Server Error
+  /files:
     post:
       tags:
         - file
@@ -309,13 +335,25 @@ paths:
                 $ref: '#/components/schemas/File'
         '400':
           description: Cannot upload file
-  /post:
+        '500':
+          description: Internal Server Error
+  /users/{user_id}/posts:
     post:
       tags:
         - post
       summary: Public post
       description: Public post
       operationId: poblicPost
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          explode: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
         content:
           application/json:
@@ -327,6 +365,8 @@ paths:
           description: Post has been created successfully
         '400':
           description: Cannot create post
+        '500':
+          description: Internal Server Error
     get:
       tags:
         - post
@@ -335,7 +375,7 @@ paths:
       operationId: getUserPosts
       parameters:
         - name: user_id
-          in: query
+          in: path
           description: User id
           required: true
           explode: true
@@ -375,7 +415,9 @@ paths:
                     example: 12
         '400':
           description: Unable load user feed
-  /post/home:
+        '500':
+          description: Internal Server Error
+  /users/{user_id}/posts/home:
     get:
       tags:
         - post
@@ -384,7 +426,7 @@ paths:
       operationId: getUserHomePosts
       parameters:
         - name: user_id
-          in: query
+          in: path
           description: User id
           required: true
           explode: true
@@ -424,6 +466,8 @@ paths:
                     example: 980
         '400':
           description: Unable load user home feed
+        '500':
+          description: Internal Server Error
   /healthcheck:
     get:
       tags:
@@ -499,10 +543,6 @@ components:
         - $ref: '#/components/schemas/Chat'
         - type: object
           properties:
-            owner_id:
-              type: integer
-              format: int64
-              example: 1
             members_id:
               type: array
               items:
@@ -575,7 +615,7 @@ components:
           type: integer
           format: int64
           example: 123
-    Post:
+    CreatePost:
       type: object
       properties:
         description:
@@ -585,18 +625,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/File'
-    CreatePost:
-      allOf:
-        - $ref: '#/components/schemas/Post'
-        - type: object
-          properties:
-            author_id:
-              type: integer
-              format: int64
-              example: 1
     PostPreview:
       allOf:
-        - $ref: '#/components/schemas/Post'
+        - $ref: '#/components/schemas/CreatePost'
         - type: object
           properties:
             created_at:
