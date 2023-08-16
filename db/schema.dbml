@@ -1,0 +1,83 @@
+// Replication: master + 1 slave (sync) + 1 slave (async)
+
+// Shard by user_id
+Table users {
+  id integer [primary key]
+  username varchar
+  email varchar
+  firstName varchar
+  lastName varchar
+  phone varchar
+  avatar_id integer
+  created_at timestamp
+}
+
+Table follows {
+  following_user_id integer
+  followed_user_id integer
+  created_at timestamp
+}
+
+Ref: users.id < follows.following_user_id
+Ref: users.id < follows.followed_user_id
+
+
+//Smart-sharding or by chat_id
+Table chats {
+  id integer [primary key]
+  name varchar
+  logo_id integer
+  owner_id integer
+  type enum(PRIVATE, GROUP)
+  created_at timestamp
+  members integer
+}
+
+Ref: chats.owner_id > users.id
+
+Table chat_members {
+  chat_id integer
+  user_id integer
+}
+
+Ref: chat_members.chat_id > chats.id
+Ref: chat_members.user_id > users.id
+
+Table messages {
+  id integer [primary key]
+  text text
+  chat_id integer
+  author_id integer
+  created_at timestamp
+}
+
+Ref: messages.author_id > users.id
+Ref: messages.chat_id > chats.id
+
+Table message_attachments {
+  id integer [primary key]
+  message_id integer
+  chat_id integer
+  attachment_id integer
+}
+
+Ref: message_attachments.message_id > messages.id
+
+
+// Sharding by user_id
+Table posts {
+  id integer [primary key]
+  description text
+  author_id integer
+  created_at timestamp
+}
+
+Ref: posts.author_id > users.id // many-to-one
+
+Table post_attachments {
+  id integer [primary key]
+  post_id integer
+  attachment_id integer
+}
+
+Ref: post_attachments.post_id > posts.id
